@@ -406,7 +406,6 @@ ScriptedImporter:
   platformSettings:
   - name: Default
     overridden: 1
-    ignorePlatformSupport: 0
     maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
