@@ -19,6 +19,7 @@ public class NewPlayer : PhysicsObject
     [SerializeField] private ParticleSystem deathParticles;
     [SerializeField] private AudioSource flameParticlesAudioSource;
     [SerializeField] private GameObject graphic;
+    [SerializeField] private GameObject HUD;
     [SerializeField] private Component[] graphicSprites;
     [SerializeField] private ParticleSystem jumpParticles;
     [SerializeField] private GameObject pauseMenu;
@@ -48,11 +49,12 @@ public class NewPlayer : PhysicsObject
     [SerializeField] private float launchRecovery; //How slow should recovering from the launch be? (Higher the number, the longer the launch will last)
     public float maxSpeed = 7; //Max move speed
     public float jumpPower = 17;
-    private bool jumping;
+    public bool jumping;
     private Vector3 origLocalScale;
     [System.NonSerialized] public bool pounded;
     [System.NonSerialized] public bool pounding;
     [System.NonSerialized] public bool shooting = false;
+    public bool drinking = false;
 
     [Header ("Inventory")]
     public float ammo;
@@ -60,6 +62,7 @@ public class NewPlayer : PhysicsObject
     public int health;
     public int maxHealth;
     public int maxAmmo;
+    public int potions;
 
     [Header ("Sounds")]
     public AudioClip deathSound;
@@ -75,6 +78,7 @@ public class NewPlayer : PhysicsObject
     public AudioClip[] poundActivationSounds;
     public AudioClip outOfAmmoSound;
     public AudioClip stepSound;
+    public AudioClip drinkSound;
     [System.NonSerialized] public int whichHurtSound;
 
     void Start()
@@ -110,7 +114,17 @@ public class NewPlayer : PhysicsObject
         {
             pauseMenu.SetActive(true);
         }
-
+        if (Input.GetButtonDown("DrinkPotion") && potions>0 && !drinking)
+        {
+            Freeze(true);
+            drinking = true;
+            animator.SetTrigger("Drink");
+            GameManager.Instance.audioSource.PlayOneShot(drinkSound);
+            maxHealth += 10;
+            health = maxHealth;
+            potions -= 1;
+            HUD.GetComponent<HUD>().consumePotion();
+        }
         //Movement, jumping, and attacking!
         if (!frozen)
         {
@@ -140,20 +154,24 @@ public class NewPlayer : PhysicsObject
             }
 
             //Secondary attack (currently shooting) with right click
+            /* if (Input.GetMouseButtonDown(1))
+             {
+                 Shoot(true);
+             }
+             else if (Input.GetMouseButtonUp(1))
+             {
+                 Shoot(false);
+             }
             if (Input.GetMouseButtonDown(1))
             {
-                Shoot(true);
-            }
-            else if (Input.GetMouseButtonUp(1))
-            {
+                animator.SetTrigger("pound");
                 Shoot(false);
             }
-
             if (shooting)
             {
                 SubtractAmmo();
             }
-
+*/
             //Allow the player to jump even if they have just fallen off an edge ("fall forgiveness")
             if (!grounded)
             {
@@ -342,6 +360,7 @@ public class NewPlayer : PhysicsObject
             audioSource.pitch = (Random.Range(0.6f, 1f));
             audioSource.PlayOneShot(landSound);
             jumping = false;
+            Debug.Log("Land Effect Called");
         }
     }
 
@@ -373,7 +392,7 @@ public class NewPlayer : PhysicsObject
         //As long as the player as activated the pound in ActivatePound, the following will occur when hitting the ground.
         if (pounding)
         {
-            animator.ResetTrigger("attack");
+            animator.ResetTrigger("pound");
             velocity.y = jumpPower / 1.4f;
             animator.SetBool("pounded", true);
             GameManager.Instance.audioSource.PlayOneShot(poundSound);

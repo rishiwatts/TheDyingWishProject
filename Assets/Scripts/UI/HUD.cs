@@ -13,6 +13,10 @@ public class HUD : MonoBehaviour
     public Animator animator;
     [SerializeField] private GameObject ammoBar;
     public TextMeshProUGUI coinsMesh;
+    public TextMeshProUGUI potionsMesh;
+    public TextMeshProUGUI attackPowerMesh;
+    public TextMeshProUGUI missingPagesMesh;
+
     [SerializeField] private GameObject healthBar;
     [SerializeField] private Image inventoryItemGraphic;
     [SerializeField] private GameObject startUp;
@@ -22,8 +26,13 @@ public class HUD : MonoBehaviour
     [System.NonSerialized] public Sprite blankUI; //The sprite that is shown in the UI when you don't have any items
     private float coins;
     private float coinsEased;
+    private int healthPotions;
+    private int attackPower;
+    private int missingPages;
     private float healthBarWidth;
     private float healthBarWidthEased;
+    private float previousMaxHealth;
+
     [System.NonSerialized] public string loadSceneName;
     [System.NonSerialized] public bool resetPlayer;
 
@@ -55,6 +64,8 @@ public class HUD : MonoBehaviour
         healthBarWidth = (float)NewPlayer.Instance.health / (float)NewPlayer.Instance.maxHealth;
         healthBarWidthEased += (healthBarWidth - healthBarWidthEased) * Time.deltaTime * healthBarWidthEased;
         healthBar.transform.localScale = new Vector2(healthBarWidthEased, 1);
+        
+        
 
         //Controls the width of the ammo bar based on the player's total ammo
         if (ammoBar)
@@ -74,6 +85,26 @@ public class HUD : MonoBehaviour
     public void SetInventoryImage(Sprite image)
     {
         inventoryItemGraphic.sprite = image;
+    }
+    public void addHealthPotion(int number)
+    {
+        healthPotions += number;
+        potionsMesh.text = healthPotions.ToString();
+    }
+    public void addRing(int power)
+    {
+        attackPower+= power;
+        attackPowerMesh.text="+"+attackPower.ToString();
+    }
+    public void addMissingPage()
+    {
+        missingPages +=1;
+        missingPagesMesh.text = missingPages.ToString();
+    }
+    public void consumePotion()
+    {
+        healthPotions -= 1;
+        potionsMesh.text = healthPotions.ToString();
     }
 
     void ResetScene()

@@ -9,8 +9,9 @@ public class DialogueTrigger : MonoBehaviour
 
     [Header ("References")]
     [SerializeField] private GameObject finishTalkingActivateObject; //After completing a conversation, an object can activate. 
+    [SerializeField] private GameObject finishTalkingDeactivateObject; //Object will deactivate before conversation begins
     [SerializeField] private Animator iconAnimator; //The E icon animator
-
+    
     [Header("Trigger")]
     [SerializeField] private bool autoHit; //Does the player need to press the interact button, or will it simply fire automatically?
     public bool completed;
@@ -34,6 +35,7 @@ public class DialogueTrigger : MonoBehaviour
     [SerializeField] private Sprite getItemSprite; //The sprite of the inventory item given, shown in HUD
     [SerializeField] private AudioClip getSound; //When the player is given an object, this sound will play
     [SerializeField] private bool instantGet; //Player can be immediately given an item the moment the conversation begins
+    [SerializeField] private bool deactivateObject;
     [SerializeField] private string requiredItem; //The required fetch quest item
     [SerializeField] private int requiredCoins; //Or the required coins (cannot require both an item and coins)
     public Animator useItemAnimator; //If the player uses an item, like a key, an animator can be fired (ie to open a door)
@@ -41,26 +43,25 @@ public class DialogueTrigger : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D col)
     {
-        if (instantGet)
-        {
-            InstantGet();
-        }
-
         if (col.gameObject == NewPlayer.Instance.gameObject && !sleeping && !completed && NewPlayer.Instance.grounded)
         {
             iconAnimator.SetBool("active", true);
             if (autoHit || (Input.GetAxis("Submit") > 0))
             {
+                if (deactivateObject)
+                {
+                    gameObject.SetActive(false);
+                }
                 iconAnimator.SetBool("active", false);
                 if (requiredItem == "" && requiredCoins == 0 || !GameManager.Instance.inventory.ContainsKey(requiredItem) && requiredCoins == 0 || (requiredCoins != 0 && NewPlayer.Instance.coins < requiredCoins))
                 {
-                    GameManager.Instance.dialogueBoxController.Appear(dialogueStringA, characterName, this, false, audioLinesA, audioChoices, finishTalkingAnimatorBool, finishTalkingActivateObject, finishTalkingActivateObjectString, repeat);
+                    GameManager.Instance.dialogueBoxController.Appear(dialogueStringA, characterName, this, false, audioLinesA, audioChoices, finishTalkingAnimatorBool, finishTalkingActivateObject, finishTalkingDeactivateObject, finishTalkingActivateObjectString, repeat);
                 }
                 else if (requiredCoins == 0 && GameManager.Instance.inventory.ContainsKey(requiredItem) || (requiredCoins != 0 && NewPlayer.Instance.coins >= requiredCoins))
                 {
                     if (dialogueStringB != "")
                     {
-                        GameManager.Instance.dialogueBoxController.Appear(dialogueStringB, characterName, this, true, audioLinesB, audioChoices, "", null, "", repeat);
+                        GameManager.Instance.dialogueBoxController.Appear(dialogueStringB, characterName, this, true, audioLinesB, audioChoices, "", null, null, "", repeat);
                     }
                     else
                     {

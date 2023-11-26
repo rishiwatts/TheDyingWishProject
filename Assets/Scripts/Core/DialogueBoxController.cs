@@ -15,6 +15,8 @@ public class DialogueBoxController : MonoBehaviour
     [SerializeField] Dialogue dialogue;
     private DialogueTrigger currentDialogueTrigger;
     private GameObject finishTalkingActivateGameObject;
+    private GameObject finishTalkingDeactivateGameObject;
+
 
     [Header("Sounds")]
     private AudioClip[] audioLines;
@@ -116,11 +118,12 @@ public class DialogueBoxController : MonoBehaviour
         }
     }
 
-    public void Appear(string fName, string characterName, DialogueTrigger dTrigger, bool useItemAfterClose, AudioClip[] audioL, AudioClip[] audioC, string finishTalkingAnimBool, GameObject finishTalkingActivateGObject, string finishTalkingActivateGOString, bool r)
+    public void Appear(string fName, string characterName, DialogueTrigger dTrigger, bool useItemAfterClose, AudioClip[] audioL, AudioClip[] audioC, string finishTalkingAnimBool, GameObject finishTalkingActivateGObject, GameObject finishTalkingDeactivateGObject, string finishTalkingActivateGOString, bool r)
     {
         repeat = r;
         finishTalkingAnimatorBool = finishTalkingAnimBool;
         finishTalkingActivateGameObject = finishTalkingActivateGObject;
+        finishTalkingDeactivateGameObject = finishTalkingDeactivateGObject;
         finishTalkingActivateGameObjectString = finishTalkingActivateGOString;
         dialogueTrigger = dTrigger;
         choice1Mesh.text = "";
@@ -189,11 +192,15 @@ public class DialogueBoxController : MonoBehaviour
         {
             dialogueTrigger.GetComponent<DialogueTrigger>().useItemAnimator.SetBool(finishTalkingAnimatorBool, true);
         }
-
+        if (finishTalkingDeactivateGameObject != null)
+        {
+            finishTalkingDeactivateGameObject.SetActive(false);
+        }
         if (finishTalkingActivateGameObject != null)
         {
             finishTalkingActivateGameObject.SetActive(true);
         }
+       
         else if (finishTalkingActivateGameObjectString != "")
         {
             GameObject.Find(finishTalkingActivateGameObjectString).GetComponent<BoxCollider2D>().enabled = true;
