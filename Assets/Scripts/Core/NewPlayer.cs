@@ -154,19 +154,19 @@ public class NewPlayer : PhysicsObject
             }
 
             //Secondary attack (currently shooting) with right click
-            /* if (Input.GetMouseButtonDown(1))
+         /*    if (Input.GetMouseButtonDown(1))
              {
                  Shoot(true);
              }
              else if (Input.GetMouseButtonUp(1))
              {
                  Shoot(false);
-             }
+             }*/
             if (Input.GetMouseButtonDown(1))
             {
                 animator.SetTrigger("pound");
                 Shoot(false);
-            }
+            }/*
             if (shooting)
             {
                 SubtractAmmo();
